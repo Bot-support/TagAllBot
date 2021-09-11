@@ -19,13 +19,18 @@ client = TelegramClient('client', api_id, api_hash).start(bot_token=bot_token)
 async def start(event):
   await event.reply("** I am member Tagger **, I can Tag almost all members in group or channel 🤓\nClick **/help** for more infomation.\n",
                     buttons=(
-                      [Button.url('📣 UPDATES', 'https://t.me/DeeCodeBots')]
+                      [
+                         Button.url('📣 UPDATES', 'https://t.me/DeeCodeBots'), 
+                         Button.url('⭐SUPPORT', 'https://t.me/DeCodeSupport'), 
+                      ], 
+                      [
+                        Button.url('➕ ADD ME TO YOUR GROUP', 'https://t.me/MEMBER_TAGERBOT?startgroup=true'),   
                     ),
                     link_preview=False
                    )
 @client.on(events.NewMessage(pattern="^/help$"))
 async def help(event):
-  helptext = "**Hey 🤓 I Am Member Tagger \n\n You can Tag members by using Commands shown below,\n\n /all text \n\n @all text \n\n #all text**"
+  helptext = "**Hey  I Am Member Tagger \n\n You can Tag members by using Commands shown below,\n\n /all text \n\n @all text \n\n #all text**"
   await event.reply(helptext,
                     buttons=(
                       [Button.url('📣 UPDATES', 'https://t.me/DeeCodeBots')]
@@ -42,7 +47,7 @@ async def mentionall(event):
   async for admin in client.iter_participants(event.chat_id, filter=ChannelParticipantsAdmins):
     admins.append(admin.id)
   if not event.sender_id in admins:
-    return await event.respond("🔴 YOU ARE NOT AN ADMIN IN THESE GROUP")
+    return await event.respond(" ❌ YOU ARE NOT AN ADMIN IN THESE GROUP")
   
   if event.pattern_match.group(1):
     mode = "text_on_cmd"
