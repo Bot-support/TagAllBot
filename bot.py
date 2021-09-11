@@ -91,6 +91,24 @@ async def mentionall(event):
 async def cancel(event):
   global moment_worker
   moment_worker.remove(event.chat_id)
+
+    
+  if mode == "text_on_reply":
+    moment_worker.append(event.chat_id)
+ 
+    usrnum = 0
+    usrtxt = ""
+    async for usr in client.iter_participants(event.chat_id):
+      usrnum += 1
+      usrtxt += f"[{usr.first_name}](tg://user?id={usr.id}) "
+      if event.chat_id not in moment_worker:
+        await event.respond("Stopped")
+        return
+      if usrnum == 5:
+        await client.send_message(event.chat_id, usrtxt, reply_to=msg)
+        await asyncio.sleep(2)
+        usrnum = 0
+        usrtxt = ""
         
 print("Started.. Join @DecodeSupport")
 client.run_until_disconnected()
