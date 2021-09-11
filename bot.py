@@ -86,6 +86,11 @@ async def mentionall(event):
         await asyncio.sleep(2)
         usrnum = 0
         usrtxt = ""
+
+@client.on(events.NewMessage(pattern='^(?i)/cancel'))
+async def cancel(event):
+  global moment_worker
+  moment_worker.remove(event.chat_id)
         
 print("Started.. Join @DecodeSupport")
 client.run_until_disconnected()
