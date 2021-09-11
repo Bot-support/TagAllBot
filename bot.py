@@ -25,7 +25,8 @@ async def start(event):
                       ], 
                       [
                         Button.url('➕ ADD ME TO YOUR GROUP', 'https://t.me/MEMBER_TAGERBOT?startgroup=true'),   
-                    ),
+                      ]
+                   ), 
                     link_preview=False
                    )
 @client.on(events.NewMessage(pattern="^/help$"))
