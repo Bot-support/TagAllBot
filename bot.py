@@ -20,11 +20,6 @@ client = TelegramClient('client', api_id, api_hash).start(bot_token=bot_token)
 
 moment_worker = []
 
-#cancel
-@client.on(events.NewMessage(pattern='^(?i)/cancel'))
-async def cancel(event):
-  global moment_worker
-  moment_worker.remove(event.chat_id)
 
 #start
 @client.on(events.NewMessage(pattern="^/start$"))
