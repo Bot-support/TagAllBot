@@ -1,4 +1,4 @@
-import os, logging, asyncio
+mport os, logging, asyncio
 from telethon import Button
 from telethon import TelegramClient, events
 from telethon.sessions import StringSession
@@ -15,9 +15,16 @@ api_hash = os.environ.get("API_HASH")
 bot_token = os.environ.get("TOKEN")
 client = TelegramClient('client', api_id, api_hash).start(bot_token=bot_token)
 
+moment_worker = []
+
+@client.on(events.NewMessage(pattern='^(?i)/cancel'))
+async def cancel(event):
+  global moment_worker
+  moment_worker.remove(event.chat_id)
+
 @client.on(events.NewMessage(pattern="^/start$"))
 async def start(event):
-  await event.reply("** I am member Tagger **, I can Tag almost all members in group or channel 🤓\nClick **/help** for more infomation.\n",
+  await event.reply("^_^ Hey, Welcome To TAG Help Bot's Menu\nI can tag 15,000 Members in Group and 300 Members In Channel.\nNeed Help /help ",
                     buttons=(
                       [
                          Button.url('📣 UPDATES', 'https://t.me/DeeCodeBots'), 
@@ -29,26 +36,36 @@ async def start(event):
                    ), 
                     link_preview=False
                    )
+
+
 @client.on(events.NewMessage(pattern="^/help$"))
 async def help(event):
-  helptext = "**Hey  I Am Member Tagger \n\n You can Tag members by using Commands shown below,\n\n /all text \n\n @all text \n\n #all text**"
+  helptext = "**Tag Help Bot's Help Menu**\n\nCommand: /all \n You can use this command with text you want to tell others. \n`Example: /all Good morning!` \nYou can use this command as an answer. any message Bot will tag users to replied message"
   await event.reply(helptext,
                     buttons=(
-                      [Button.url('📣 UPDATES', 'https://t.me/DeeCodeBots')]
-                    ),
+                      [
+                         Button.url('📣 UPDATES', 'https://t.me/DeeCodeBots'), 
+                         Button.url('⭐SUPPORT', 'https://t.me/DeCodeSupport'), 
+                      ], 
+                      [
+                        Button.url('➕ ADD ME TO YOUR GROUP', 'https://t.me/MEMBER_TAGERBOT?startgroup=true'),   
+                      ]
+                   ), 
                     link_preview=False
                    )
-  
-@client.on(events.NewMessage(pattern="^/tagall|/mall|/tall|/all|#all|@all ?(.*)"))
+
+
+@client.on(events.NewMessage(pattern="^/tag ?(.*)"))
 async def mentionall(event):
+  global moment_worker
   if event.is_private:
-    return await event.respond("__This command can be use in groups and channels!__")
+    return await event.respond("Use This In Channel or Group!")
   
   admins = []
   async for admin in client.iter_participants(event.chat_id, filter=ChannelParticipantsAdmins):
     admins.append(admin.id)
   if not event.sender_id in admins:
-    return await event.respond(" ❌ YOU ARE NOT AN ADMIN IN THESE GROUP")
+    return await event.respond("Only Admin can use it.")
   
   if event.pattern_match.group(1):
     mode = "text_on_cmd"
@@ -57,42 +74,29 @@ async def mentionall(event):
     mode = "text_on_reply"
     msg = event.reply_to_msg_id
     if msg == None:
-        return await event.respond("__I can't mention members for older messages! (messages which sended before i added to group)__")
+        return await event.respond("I can't Mention Members for Old Post!")
   elif event.pattern_match.group(1) and event.reply_to_msg_id:
-    return await event.respond("__Give me one argument!__")
+    return await event.respond("Give me can an Argument. Ex: `/tag Hey, Where are you`")
   else:
-    return await event.respond("GIVE ME A TEXT TO TAG MEMBERS OR REPLY TO A TEXT WHICH YOU WANTS TO TAG ALL")
-  
+    return await event.respond("Reply to Message or Give Some Text To Mention!")
+    
   if mode == "text_on_cmd":
+    moment_worker.append(event.chat_id)
     usrnum = 0
     usrtxt = ""
     async for usr in client.iter_participants(event.chat_id):
       usrnum += 1
       usrtxt += f"[{usr.first_name}](tg://user?id={usr.id}) "
+      if event.chat_id not in moment_worker:
+        await event.respond("Stopped!")
+        return
       if usrnum == 5:
         await client.send_message(event.chat_id, f"{usrtxt}\n\n{msg}")
         await asyncio.sleep(2)
         usrnum = 0
         usrtxt = ""
         
-  if mode == "text_on_reply":
-    usrnum = 0
-    usrtxt = ""
-    async for usr in client.iter_participants(event.chat_id):
-      usrnum += 1
-      usrtxt += f"[{usr.first_name}](tg://user?id={usr.id}) "
-      if usrnum == 5:
-        await client.send_message(event.chat_id, usrtxt, reply_to=msg)
-        await asyncio.sleep(2)
-        usrnum = 0
-        usrtxt = ""
-
-@client.on(events.NewMessage(pattern='^(?i)/cancel'))
-async def cancel(event):
-  global moment_worker
-  moment_worker.remove(event.chat_id)
-
-    
+  
   if mode == "text_on_reply":
     moment_worker.append(event.chat_id)
  
@@ -109,6 +113,10 @@ async def cancel(event):
         await asyncio.sleep(2)
         usrnum = 0
         usrtxt = ""
-        
-print("Started.. Join @DecodeSupport")
+
+
+
+
+print("Started Successfully Join Support")
+print("¯\_(ツ)_/¯ Need Help Join @DeCodeSupport")
 client.run_until_disconnected()
